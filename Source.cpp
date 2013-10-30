@@ -3,7 +3,7 @@
 #include <cstdlib>
 #include "SaleItem.h"
 
-#define MAX_SIZE 200
+#define MAX_SIZE 31
 
 using namespace std;
 
@@ -41,8 +41,11 @@ pthread_cond_t consumer_condition;
 
 int main(){
 
-	ProduceConsume(2, 4);
+	ProduceConsume(10, 4);
 	cout << Production_Count << endl;
+
+
+
 
 	system("pause");
 	return 0;
@@ -79,6 +82,14 @@ void ProduceConsume(int maxProducers, int maxConsumers){
 	for (int i = 0; i < maxProducers; i++)
 		pthread_join(producerThreads[i], NULL);
 	
+	//print the buffer for debugging
+	for(int i = 0; i < MAX_SIZE; i++){
+		buff[i].display();
+		cout <<endl;
+	}
+		
+
+
 	//destroy arrays
 	delete[] producer_data;
 	delete[] consumer_data;
