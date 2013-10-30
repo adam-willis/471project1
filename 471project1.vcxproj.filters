@@ -15,21 +15,15 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\Desktop\pthread example\pthread1\SaleItem.cpp">
+    <ClCompile Include="SaleItem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Desktop\pthread example\pthread1\test.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Desktop\pthread example\pthread1\threadtest.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Desktop\pthread example\pthread1\threadtest2.cpp">
+    <ClCompile Include="Source.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\Desktop\pthread example\pthread1\SaleItem.h">
+    <ClInclude Include="SaleItem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

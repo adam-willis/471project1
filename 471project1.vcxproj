@@ -10,6 +10,13 @@
       <Platform>Win32</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="SaleItem.cpp" />
+    <ClCompile Include="Source.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="SaleItem.h" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{36386538-5BC0-4076-B70C-1B7B9B9C039B}</ProjectGuid>
     <RootNamespace>My471project1</RootNamespace>
@@ -63,15 +70,6 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="..\..\..\Desktop\pthread example\pthread1\SaleItem.cpp" />
-    <ClCompile Include="..\..\..\Desktop\pthread example\pthread1\test.cpp" />
-    <ClCompile Include="..\..\..\Desktop\pthread example\pthread1\threadtest.cpp" />
-    <ClCompile Include="..\..\..\Desktop\pthread example\pthread1\threadtest2.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\..\..\Desktop\pthread example\pthread1\SaleItem.h" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
