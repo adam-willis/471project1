@@ -24,7 +24,7 @@ SalesRecord::SalesRecord(int ThreadID)
 	SaleAmount=RandomAmount();
 	//Random Store ID - This might be the actual thread ID instead of a random number between 1-p
 	//I believe you are right!
-	StoreID=RandomInt(ThreadID);
+	StoreID=ThreadID;
 }
 
 //accessors

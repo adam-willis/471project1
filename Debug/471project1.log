@@ -1,11 +1,14 @@
-﻿Build started 10/29/2013 10:51:26 PM.
+﻿Build started 10/29/2013 11:30:26 PM.
      1>Project "C:\Users\adam\SkyDrive\Workspace\471project1\471project1.vcxproj" on node 2 (Build target(s)).
-     1>Link:
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc110.pdb" /Gd /TP /analyze- /errorReport:prompt SaleItem.cpp
+         SaleItem.cpp
+       Link:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\adam\SkyDrive\Workspace\471project1\Debug\471project1.exe" /INCREMENTAL /NOLOGO pthreadVC2.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\adam\SkyDrive\Workspace\471project1\Debug\471project1.pdb" /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\adam\SkyDrive\Workspace\471project1\Debug\471project1.lib" /MACHINE:X86 Debug\SaleItem.obj
          Debug\Source.obj
-     1>LINK : fatal error LNK1168: cannot open C:\Users\adam\SkyDrive\Workspace\471project1\Debug\471project1.exe for writing
-     1>Done Building Project "C:\Users\adam\SkyDrive\Workspace\471project1\471project1.vcxproj" (Build target(s)) -- FAILED.
+         471project1.vcxproj -> C:\Users\adam\SkyDrive\Workspace\471project1\Debug\471project1.exe
+     1>Done Building Project "C:\Users\adam\SkyDrive\Workspace\471project1\471project1.vcxproj" (Build target(s)).
 
-Build FAILED.
+Build succeeded.
 
-Time Elapsed 00:00:00.20
+Time Elapsed 00:00:02.08
