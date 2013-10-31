@@ -2,7 +2,7 @@
 //default constructor should never be used, but it's there
 SalesRecord::SalesRecord()
 {
-	Day=0;
+	Day=10;
 	Month=0;
 	Year=0;
 	Register=0;
