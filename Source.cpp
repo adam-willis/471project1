@@ -124,8 +124,9 @@ pd->count=0;
 		buff[i] = SalesRecord(pd->ID);
 		pd->count=pd->count++;
 
-
+				pthread_mutex_lock(&producer_mutex); //lock the shared count
 		cout<<"Producer: "<<pd->ID<<" Current Count"<<pd->count<<endl;
+				pthread_mutex_unlock(&producer_mutex); //unlock the shared count
 
 
 	//*************************************************************************************************

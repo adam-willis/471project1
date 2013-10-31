@@ -1,4 +1,4 @@
-﻿Build started 10/31/2013 1:07:49 PM.
+﻿Build started 10/31/2013 12:52:59 PM.
      1>Project "C:\Users\dholmes\Documents\Visual Studio 2012\Projects\471project1\471project1.vcxproj" on node 2 (Build target(s)).
      1>ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\CL.exe /c /I"C:\Users\dholmes\Documents\Visual Studio 2012\Projects\471project1\packages\pthreads.2.9.1.4\build\native\../..//build/native/include/" /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D HAS_PTHREAD /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc110.pdb" /Gd /TP /analyze- /errorReport:prompt Source.cpp
@@ -12,4 +12,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:01.99
+Time Elapsed 00:00:01.73
