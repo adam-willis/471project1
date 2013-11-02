@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+  <metadata>
+    <id>pthreads</id>
+    <version>2.9.1.4</version>
+    <title>Pthreads Library</title>
+    <authors>Pthreads contributors,  Tim Rogers</authors>
+    <owners>Pthreads contributors,  Tim Rogers</owners>
+    <licenseUrl>https://raw.github.com/coapp-packages/pthreads/master/COPYING.LIB</licenseUrl>
+    <projectUrl>http://github.com/coapp-packages/pthreads</projectUrl>
+    <iconUrl>http://www.sourceware.org/pthreads-win32/images/Pthreads-win32-small.gif;
+		requireLicenseAcceptance:false</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>A library for writing multithreaded applications with POSIX threads.
+		Pthreads homepage: http://www.sourceware.org/pthreads-win32/</description>
+    <summary>Pthreads - POSIX threads API for Windows</summary>
+    <releaseNotes>Release of pthreads-win32 2.9.1</releaseNotes>
+    <copyright>Copyright 2013</copyright>
+    <tags>pthread libpthread native CoApp</tags>
+    <dependencies>
+      <dependency id="pthreads.redist" version="2.9.1.4" />
+    </dependencies>
+  </metadata>
+</package>

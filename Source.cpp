@@ -3,20 +3,31 @@
 #include <semaphore.h>
 #include "SaleItem.h"
 
-#define NUM_PRODUCERS 2				//Number of Producers might change to dynamic if time
-#define NUM_CONSUMERS 2					//Number of Consumers might change to dynamic if time
-#define BSIZE 10						//Size of buffer shared by consumers and producers
-#define NUM_ITEMS  10					//determines how many will be created
+//Function Prototypes
+void *ProducerFunction (void *);
+void *ConsumerFunction (void *);
+void DisplayLocalConsumerData();
+void DisplayGlobalStatistics();
 
-//shared variables
-int ProductionCount=0;					//track the total SalesRecords produced
-int ConsumptionCount=0;					//track the total SalesRecords consumed
-int ReadPosition=0;						//track the buffer read position
-int WritePosition=0;					//track the buffer write position
-int ReadyItems=0;						//number of items in buffer - will not need after semaphore
-double MonthTotals[13];					//each index holds a corresponding month total (index based on month 1-12 used)
-double StoreTotals[NUM_PRODUCERS];		//each index holds a corresponding store total (index based on producer number)
-SalesRecord Buffer[BSIZE];				//Used to hold StoreItems Produced Until Consumed
+//Shared Values
+const int NUM_ITEMS=100;					//This can actually stay constant after program is running
+const int NUM_PRODUCERS=10;					//Represents user input, will change to dynamic
+const int NUM_CONSUMERS=2;					//Represents user input, will change to dynamic
+const int BSIZE=30;							//Represents user input, will change to dynamic
+int TotalProduced=0, TotalConsumed=0;		//global values to track the number produced/consumed
+int ReadPosition=0, WritePosition=0;		//the read/right position in the buffer
+double StoreTotals[NUM_PRODUCERS];			//Store-wide total sales (Store held in respective index)
+double MonthTotals[13];						//Month-wide total sales (Month held in respective index)
+SalesRecord Buffer[BSIZE];					//Used to hold StoreItems Produced Until Consumed
+
+/*Problems to overcome with making the above values dynamic:
+Buffer size is needed to track location of read/write - can make a SaleItem pointer and update size after user input
+Producer size is needed - Used to create threads(already done dynamically) and consumer must track producer data
+Consumer size is needed - USed to create threads(already done dynamically) and ConsumerData structs needs number */
+					
+sem_t MakeItem, TakeItem;					//Semaphore to indicate if buffer is full or has space
+sem_t ProducedMutex, ConsumedMutex;			//Semaphore to ensure mutex on TotalProduced, TotalConsumed
+sem_t ReadMutex, WriteMutex;				//Semaphore to ensure mutex on ReadPosition, WritePosition 
 
 struct ConsumerData
 {
@@ -30,97 +41,110 @@ ConsumerData CData[NUM_CONSUMERS];			//array to hold ConsumeData structs
 pthread_t * ProducerThreads;
 pthread_t * ConsumerThreads;
 
-//function protos
-void *ProducerFunction (void *);
-void *ConsumerFunction (void *);
-void DisplayLocalConsumerData();
-void DisplayGlobalStatistics();
-
-pthread_mutex_t producer_mutex;
-pthread_mutex_t consumer_mutex;
-pthread_cond_t producer_condition;
-pthread_cond_t consumer_condition;
-
 int main()
 {
-	int rc1, rc2; //return codes if threads fail to create
+int rc1, rc2;								//return codes if threads fail to create
 
-	//Create the arrays to hold the producer and consumer threads
-	ProducerThreads=new pthread_t[NUM_PRODUCERS];
-	ConsumerThreads=new pthread_t[NUM_CONSUMERS];
-	
-	//create the consumers
-	for (int t=0; t<NUM_CONSUMERS; t++)
+//Create the arrays to hold the producers and consumer threads
+ProducerThreads=new pthread_t[NUM_PRODUCERS];
+ConsumerThreads=new pthread_t[NUM_CONSUMERS];
+
+//initialize the semaphores 
+//parameters for sem_init(pointer to the semaphore, level of sharing, initial value)
+sem_init(&MakeItem, 0, BSIZE);
+sem_init(&TakeItem, 0, 0);
+sem_init(&ReadMutex, 0, 1);
+sem_init(&WriteMutex, 0, 1);
+sem_init(&ProducedMutex, 0, 1);
+sem_init(&ConsumedMutex, 0, 1);
+
+//create the consumers
+for (int t=0; t<NUM_CONSUMERS; t++)
+{
+	cout<<"Creating consumer thread: "<<t<<endl;
+	rc1=pthread_create(&ConsumerThreads[t], NULL, ConsumerFunction, (void*) t);
+	if (rc1)
 	{
-		cout<<"Creating consumer thread: "<<t<<endl;
-		rc1=pthread_create(&ConsumerThreads[t], NULL, ConsumerFunction, (void*) t);
-		if (rc1)
-		{
-			cout<<"Error, return code from pthread_create is: "<<rc1<<endl;
-			return 1;
-		}
+		cout<<"Error, return code from pthread_create is: "<<rc1<<endl;
+		return 1;
 	}
-
-	//create the producers
-	for (int t=0; t<NUM_PRODUCERS; t++)
-	{
-		cout<<"Creating producer thread: "<<t<<endl;
-		rc2=pthread_create(&ProducerThreads[t], NULL, ProducerFunction, (void*) t);
-		if (rc2)
-		{
-			cout<<"Error, return code from pthread_create is: "<<rc2<<endl;
-			return 1;
-		}
-	}
-
-	pthread_mutex_init(&producer_mutex, NULL);
-	pthread_mutex_init(&consumer_mutex, NULL);
-	pthread_cond_init(&producer_condition, NULL);
-	pthread_cond_init(&consumer_condition, NULL);
-
-	//wait for threads to finish
-    for (int i = 0; i < NUM_CONSUMERS; i++)
-		pthread_join(ConsumerThreads[i], NULL);
-    for (int i = 0; i < NUM_PRODUCERS; i++)
-		pthread_join(ProducerThreads[i], NULL);
-
-	//print the buffer for debugging
-    for(int i = 0; i < BSIZE; i++)
-	{
-		Buffer[i].display();
-        cout <<endl;
-	}
-
-	cout<<"Production Count: "<<ProductionCount<<endl;
-
-	//Display the Local Consumer Data
-	DisplayLocalConsumerData();
-
-	//Display the Global Statistics
-	DisplayGlobalStatistics();
-
-	system("pause");
-	return 0;
 }
+
+//create the producers
+for (int t=0; t<NUM_PRODUCERS; t++)
+{
+	cout<<"Creating producer thread: "<<t<<endl;
+	rc2=pthread_create(&ProducerThreads[t], NULL, ProducerFunction, (void*) t);
+	if (rc2)
+	{
+		cout<<"Error, return code from pthread_create is: "<<rc2<<endl;
+		return 1;
+	}
+}
+
+//wait for threads to finish
+for (int i = 0; i < NUM_CONSUMERS; i++)
+	pthread_join(ConsumerThreads[i], NULL);
+for (int i = 0; i < NUM_PRODUCERS; i++)
+	pthread_join(ProducerThreads[i], NULL);
+
+//print the buffer for debugging
+for(int i = 0; i < BSIZE; i++)
+{
+	Buffer[i].display();
+    cout <<endl;
+}
+
+cout<<"Total Produced: "<<TotalProduced<<endl;
+
+//Display the Local Consumer Data
+DisplayLocalConsumerData();
+
+//Display the Global Statistics
+DisplayGlobalStatistics();
+
+
+//perform cleanup of any dynamically allocated items
+sem_destroy(&MakeItem);
+sem_destroy(&TakeItem);
+sem_destroy(&ReadMutex);
+sem_destroy(&WriteMutex);
+sem_destroy(&ProducedMutex);
+sem_destroy(&ConsumedMutex);
+
+system("pause");
+
+return 0;
+}
+
 
 void *ProducerFunction (void *t)
 {
 	int ProducerID=(long)t;
 	cout<<"Producer: "<<ProducerID<<" started"<<endl;
-	srand((int)time(NULL)^(int)ProducerID);//pick a new random seed for each thread
+	//pick a new random seed for each thread
+	srand((int)time(NULL)^(int)ProducerID);
 
-	while (ProductionCount<NUM_ITEMS)  //Keep trying to produce until NUM_ITEMS has been produced
+	//infinate loop until treads complete
+	while(1)
 	{
-		while (ReadyItems==BSIZE || ReadyItems>BSIZE); //do nothing if there is no room to write - will be controlled by semaphore
+		sem_wait(&ProducedMutex);			//All producers wait while checking the number produced
+		if (TotalProduced==NUM_ITEMS)		//Check NUM_ITEMS has been produced yet
+		{
+			sem_post(&ProducedMutex);		//Remove wait after answer is known
+			pthread_exit(NULL);				//Exit thread if true
+		}
+		TotalProduced++;					//Increment since an item will be produced when thread has an opportunity
+		sem_post(&ProducedMutex);			//Remove wait after TotalProduced is updated
 
-		//** No longer waiting, time to produce **//
-		pthread_mutex_lock(&producer_mutex);
+		sem_wait(&MakeItem);				//Do Nothing - wait for signal from consumers to make an item
+
+		//No longer waiting - there is now free buffer space
+		sem_wait(&WriteMutex);				//Other producers wait while the buffer is written to and WritePostion is changed
 		Buffer[WritePosition]=SalesRecord(ProducerID);
-		cout<<"Index: "<<WritePosition<<" being written to by producer: "<<ProducerID<<endl;
-		WritePosition=(WritePosition+1)%BSIZE;	//advance write head
-		ReadyItems++;							//increment items ready for consumption
-		ProductionCount++;						//increment overall production count
-		pthread_mutex_unlock(&producer_mutex);
+		WritePosition=(WritePosition+1)%BSIZE;
+		sem_post(&WriteMutex);				//Remove wait on buffer and WritePosition
+		sem_post(&TakeItem);				//Signal waiting consumers it's ok to take an item
 	}
 	cout<<"Producer: "<<ProducerID<<" done"<<endl;
 	pthread_exit(0);
@@ -132,23 +156,29 @@ void *ConsumerFunction (void *t)
 	int ConsumerID=(long)t;
 	cout<<"Consumer: "<<ConsumerID<<" started"<<endl;
 
-	while (ConsumptionCount<NUM_ITEMS)  //Keep trying to consume until NUM_ITEMS has been consumed
+	//infinate loop until threads complete
+	while(1)
 	{
-		while (ReadyItems==0 || ReadyItems<0);  //do nothing if there is nothing to consume - will be controlled by semaphore
+		sem_wait(&ConsumedMutex);			//All consumers wait while checking the number consumed
+		if(TotalConsumed==NUM_ITEMS)		
+		{
+			sem_post(&ConsumedMutex);		//Remove wait after answer is known
+			pthread_exit(NULL);				//Exit thread if true
+		}
+		TotalConsumed++;					//Increment since an item will be consumed when thread has opportunity
+		sem_post(&ConsumedMutex);			//Remove wait after TotalConsumed is updated
 
-		//** No longer waiting, time to consume **//
-		pthread_mutex_lock(&consumer_mutex);
-		cout<<"Index: "<<ReadPosition<<" being read by consumer: "<<ConsumerID<<endl;
-		//**This gets really ugly and cryptic, a different container perhaps?  Debating a consumer class.
-		//**The calculations work with 1 producer, 1 consumer.
+		sem_wait(&TakeItem);				//Do Nothing - wait for signal from producer that an item is available
+
+		//No longer waiting on item to be made
+		sem_wait(&ReadMutex);				//Other consumers wait while the item is being read and ReadPosition is changed
 		CData[ConsumerID].ID=ConsumerID;
 		CData[ConsumerID].ConMonthTotals[Buffer[ReadPosition].getMonth()]+=Buffer[ReadPosition].getSaleAmount();
 		CData[ConsumerID].ConStoreTotals[Buffer[ReadPosition].getStoreID()]+=Buffer[ReadPosition].getSaleAmount();
-		ReadPosition=(ReadPosition+1)%BSIZE;		//advance read head
-		ReadyItems--;								//decrement items ready for consumption
-		ConsumptionCount++;							//increment overall consumption count
-		pthread_mutex_unlock(&consumer_mutex);
-	}
+		ReadPosition=(ReadPosition+1)%BSIZE;
+		sem_post(&ReadMutex);				//Remove wait on buffer and ReadPosition
+		sem_post(&MakeItem);				//Signal Producers that it's ok to make an item
+	}	
 
 	cout<<"Consumer: "<<ConsumerID<<" done"<<endl;
 	pthread_exit(0);
@@ -189,7 +219,6 @@ void DisplayLocalConsumerData()
 
 void DisplayGlobalStatistics()
 {
-
 	//store totals
 	for (int i=0; i<NUM_PRODUCERS; i++)
 	{
