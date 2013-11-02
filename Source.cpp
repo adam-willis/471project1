@@ -3,10 +3,10 @@
 #include <semaphore.h>
 #include "SaleItem.h"
 
-#define NUM_PRODUCERS 5					//Number of Producers might change to dynamic if time
-#define NUM_CONSUMERS 5					//Number of Consumers might change to dynamic if time
+#define NUM_PRODUCERS 2				//Number of Producers might change to dynamic if time
+#define NUM_CONSUMERS 2					//Number of Consumers might change to dynamic if time
 #define BSIZE 10						//Size of buffer shared by consumers and producers
-#define NUM_ITEMS  30					//determines how many will be created
+#define NUM_ITEMS  10					//determines how many will be created
 
 //shared variables
 int ProductionCount=0;					//track the total SalesRecords produced
@@ -14,8 +14,8 @@ int ConsumptionCount=0;					//track the total SalesRecords consumed
 int ReadPosition=0;						//track the buffer read position
 int WritePosition=0;					//track the buffer write position
 int ReadyItems=0;						//number of items in buffer - will not need after semaphore
-double MonthTotals[12];					//each index holds a corresponding month total
-double StoreTotals[NUM_PRODUCERS];		//each index holds a corresponding store total
+double MonthTotals[13];					//each index holds a corresponding month total (index based on month 1-12 used)
+double StoreTotals[NUM_PRODUCERS];		//each index holds a corresponding store total (index based on producer number)
 SalesRecord Buffer[BSIZE];				//Used to hold StoreItems Produced Until Consumed
 
 struct ConsumerData
@@ -34,6 +34,7 @@ pthread_t * ConsumerThreads;
 void *ProducerFunction (void *);
 void *ConsumerFunction (void *);
 void DisplayLocalConsumerData();
+void DisplayGlobalStatistics();
 
 pthread_mutex_t producer_mutex;
 pthread_mutex_t consumer_mutex;
@@ -95,6 +96,9 @@ int main()
 	//Display the Local Consumer Data
 	DisplayLocalConsumerData();
 
+	//Display the Global Statistics
+	DisplayGlobalStatistics();
+
 	system("pause");
 	return 0;
 }
@@ -135,6 +139,8 @@ void *ConsumerFunction (void *t)
 		//** No longer waiting, time to consume **//
 		pthread_mutex_lock(&consumer_mutex);
 		cout<<"Index: "<<ReadPosition<<" being read by consumer: "<<ConsumerID<<endl;
+		//**This gets really ugly and cryptic, a different container perhaps?  Debating a consumer class.
+		//**The calculations work with 1 producer, 1 consumer.
 		CData[ConsumerID].ID=ConsumerID;
 		CData[ConsumerID].ConMonthTotals[Buffer[ReadPosition].getMonth()]+=Buffer[ReadPosition].getSaleAmount();
 		CData[ConsumerID].ConStoreTotals[Buffer[ReadPosition].getStoreID()]+=Buffer[ReadPosition].getSaleAmount();
@@ -143,6 +149,7 @@ void *ConsumerFunction (void *t)
 		ConsumptionCount++;							//increment overall consumption count
 		pthread_mutex_unlock(&consumer_mutex);
 	}
+
 	cout<<"Consumer: "<<ConsumerID<<" done"<<endl;
 	pthread_exit(0);
 	return 0;
@@ -153,7 +160,8 @@ void DisplayLocalConsumerData()
 	for (int i=0; i<NUM_CONSUMERS; i++)
 	{
 		cout<<"========================================================"<<endl;
-		cout<<"Consumer: "<<CData[i].ID<<endl;
+		cout<<"Local Consumer Data Report - Consumer: "<<CData[i].ID<<endl;
+		cout<<"========================================================"<<endl;
 		cout<<"Monthly Totals:"<<endl;
 		cout<<"========================================================"<<endl;
 		cout<<"Jan = $"<<CData[i].ConMonthTotals[1]<<endl;
@@ -168,6 +176,7 @@ void DisplayLocalConsumerData()
 		cout<<"Oct = $"<<CData[i].ConMonthTotals[10]<<endl;
 		cout<<"Nov = $"<<CData[i].ConMonthTotals[11]<<endl;
 		cout<<"Dec = $"<<CData[i].ConMonthTotals[12]<<endl<<endl;
+		cout<<"========================================================"<<endl;
 		cout<<"Store Totals:"<<endl;
 		cout<<"========================================================"<<endl;
 		for (int j=0; j<NUM_PRODUCERS; j++)
@@ -176,6 +185,47 @@ void DisplayLocalConsumerData()
 		}
 		cout<<endl<<endl;
 	}
+}
 
+void DisplayGlobalStatistics()
+{
 
+	//store totals
+	for (int i=0; i<NUM_PRODUCERS; i++)
+	{
+		for (int j=0; j<NUM_CONSUMERS; j++)
+		{		
+			StoreTotals[i]+=CData[j].ConStoreTotals[i];	
+		}
+	}
+	cout<<"========================================================"<<endl;
+	cout<<"Global Store Statistics: "<<endl;
+	cout<<"========================================================"<<endl;
+	for (int i=0; i<NUM_PRODUCERS; i++)
+	{
+		cout<<"Store "<<i<<" = $"<<StoreTotals[i]<<endl;
+	}
+	//month Totals
+	for (int i=0; i<13; i++)
+	{
+		for (int j=0; j<NUM_CONSUMERS; j++)
+		{
+			MonthTotals[i]+=CData[j].ConMonthTotals[i];
+		}
+	}
+	cout<<"========================================================"<<endl;
+	cout<<"Global Monthly Statistics: "<<endl;
+	cout<<"========================================================"<<endl;
+	cout<<"Jan = $"<<MonthTotals[1]<<endl;
+	cout<<"Feb = $"<<MonthTotals[2]<<endl;
+	cout<<"Mar = $"<<MonthTotals[3]<<endl;
+	cout<<"Apr = $"<<MonthTotals[4]<<endl;
+	cout<<"May = $"<<MonthTotals[5]<<endl;
+	cout<<"Jun = $"<<MonthTotals[6]<<endl;
+	cout<<"Jul = $"<<MonthTotals[7]<<endl;
+	cout<<"Aug = $"<<MonthTotals[8]<<endl;
+	cout<<"Sep = $"<<MonthTotals[9]<<endl;
+	cout<<"Oct = $"<<MonthTotals[10]<<endl;
+	cout<<"Nov = $"<<MonthTotals[11]<<endl;
+	cout<<"Dec = $"<<MonthTotals[12]<<endl<<endl;
 }
