@@ -77,6 +77,7 @@ double SalesRecord::RandomAmount()
 //display
 void SalesRecord::display() const
 {
+	cout<<fixed<<setprecision(2);
 	cout<<"Date: "<<setw(2)<<setfill('0')<<getDay()<<"/"
 		<<setw(2)<<setfill('0')<<getMonth()<<"/"
 		<<setw(2)<<setfill('0')<<getYear()<<"  "
