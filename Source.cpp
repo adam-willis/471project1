@@ -10,8 +10,8 @@ void DisplayLocalConsumerData();
 void DisplayGlobalStatistics();
 
 //Shared Values
-const int NUM_ITEMS=100;					//This can actually stay constant after program is running
-const int NUM_PRODUCERS=10;					//Represents user input, will change to dynamic
+const int NUM_ITEMS=10000;					//This can actually stay constant after program is running
+const int NUM_PRODUCERS=2;					//Represents user input, will change to dynamic
 const int NUM_CONSUMERS=2;					//Represents user input, will change to dynamic
 const int BSIZE=30;							//Represents user input, will change to dynamic
 int TotalProduced=0, TotalConsumed=0;		//global values to track the number produced/consumed
@@ -89,6 +89,7 @@ for (int i = 0; i < NUM_PRODUCERS; i++)
 	pthread_join(ProducerThreads[i], NULL);
 
 //print the buffer for debugging
+cout<<"The current buffer (last "<<BSIZE<<" produced):"<<endl;
 for(int i = 0; i < BSIZE; i++)
 {
 	Buffer[i].display();
@@ -132,6 +133,7 @@ void *ProducerFunction (void *t)
 		if (TotalProduced==NUM_ITEMS)		//Check NUM_ITEMS has been produced yet
 		{
 			sem_post(&ProducedMutex);		//Remove wait after answer is known
+			cout<<"Producer: "<<ProducerID<<" done"<<endl;
 			pthread_exit(NULL);				//Exit thread if true
 		}
 		TotalProduced++;					//Increment since an item will be produced when thread has an opportunity
@@ -146,8 +148,6 @@ void *ProducerFunction (void *t)
 		sem_post(&WriteMutex);				//Remove wait on buffer and WritePosition
 		sem_post(&TakeItem);				//Signal waiting consumers it's ok to take an item
 	}
-	cout<<"Producer: "<<ProducerID<<" done"<<endl;
-	pthread_exit(0);
 	return 0;
 }
 
@@ -163,6 +163,7 @@ void *ConsumerFunction (void *t)
 		if(TotalConsumed==NUM_ITEMS)		
 		{
 			sem_post(&ConsumedMutex);		//Remove wait after answer is known
+			cout<<"Consumer: "<<ConsumerID<<" done"<<endl;
 			pthread_exit(NULL);				//Exit thread if true
 		}
 		TotalConsumed++;					//Increment since an item will be consumed when thread has opportunity
@@ -179,9 +180,6 @@ void *ConsumerFunction (void *t)
 		sem_post(&ReadMutex);				//Remove wait on buffer and ReadPosition
 		sem_post(&MakeItem);				//Signal Producers that it's ok to make an item
 	}	
-
-	cout<<"Consumer: "<<ConsumerID<<" done"<<endl;
-	pthread_exit(0);
 	return 0;
 }
 
