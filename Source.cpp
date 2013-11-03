@@ -1,4 +1,5 @@
 #include <cstdlib>
+#include <Windows.h>
 #include <pthread.h>
 #include <semaphore.h>
 #include "SaleItem.h"
@@ -10,10 +11,10 @@ void DisplayLocalConsumerData();
 void DisplayGlobalStatistics();
 
 //Shared Values
-const int NUM_ITEMS=10000;					//This can actually stay constant after program is running
-const int NUM_PRODUCERS=2;					//Represents user input, will change to dynamic
-const int NUM_CONSUMERS=2;					//Represents user input, will change to dynamic
-const int BSIZE=30;							//Represents user input, will change to dynamic
+const int NUM_ITEMS=100;					//This can actually stay constant after program is running
+const int NUM_PRODUCERS=5;					//Represents user input, will change to dynamic
+const int NUM_CONSUMERS=5;					//Represents user input, will change to dynamic
+const int BSIZE=10;							//Represents user input, will change to dynamic
 int TotalProduced=0, TotalConsumed=0;		//global values to track the number produced/consumed
 int ReadPosition=0, WritePosition=0;		//the read/right position in the buffer
 double StoreTotals[NUM_PRODUCERS];			//Store-wide total sales (Store held in respective index)
@@ -43,8 +44,10 @@ pthread_t * ConsumerThreads;
 
 int main()
 {
+clock_t t1, t2;								//time variables for start time and end time
+t1=clock();									//starting time
 int rc1, rc2;								//return codes if threads fail to create
-
+											
 //Create the arrays to hold the producers and consumer threads
 ProducerThreads=new pthread_t[NUM_PRODUCERS];
 ConsumerThreads=new pthread_t[NUM_CONSUMERS];
@@ -113,11 +116,13 @@ sem_destroy(&WriteMutex);
 sem_destroy(&ProducedMutex);
 sem_destroy(&ConsumedMutex);
 
+t2=clock();								//ending time
+float diff ((float)t2-(float)t1);
+cout<<"The Total Run Time Was: "<<diff/CLOCKS_PER_SEC<<" Seconds."<<endl;
 system("pause");
 
 return 0;
 }
-
 
 void *ProducerFunction (void *t)
 {
@@ -136,9 +141,9 @@ void *ProducerFunction (void *t)
 			cout<<"Producer: "<<ProducerID<<" done"<<endl;
 			pthread_exit(NULL);				//Exit thread if true
 		}
-		TotalProduced++;					//Increment since an item will be produced when thread has an opportunity
+		TotalProduced++;					//Increment since an item will be produced when thread has opportunity
 		sem_post(&ProducedMutex);			//Remove wait after TotalProduced is updated
-
+		
 		sem_wait(&MakeItem);				//Do Nothing - wait for signal from consumers to make an item
 
 		//No longer waiting - there is now free buffer space
@@ -147,6 +152,7 @@ void *ProducerFunction (void *t)
 		WritePosition=(WritePosition+1)%BSIZE;
 		sem_post(&WriteMutex);				//Remove wait on buffer and WritePosition
 		sem_post(&TakeItem);				//Signal waiting consumers it's ok to take an item
+		Sleep(int(rand()%36)+5);			//randomly sleep for 5-40 milliseconds
 	}
 	return 0;
 }
@@ -168,7 +174,7 @@ void *ConsumerFunction (void *t)
 		}
 		TotalConsumed++;					//Increment since an item will be consumed when thread has opportunity
 		sem_post(&ConsumedMutex);			//Remove wait after TotalConsumed is updated
-
+		this_thread:sleep:(10);
 		sem_wait(&TakeItem);				//Do Nothing - wait for signal from producer that an item is available
 
 		//No longer waiting on item to be made

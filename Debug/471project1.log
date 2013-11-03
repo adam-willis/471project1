@@ -1,10 +1,10 @@
-﻿Build started 11/2/2013 10:31:19 PM.
+﻿Build started 11/3/2013 1:49:19 AM.
      1>Project "C:\Users\Family\Source\Repos\471project1\471project1\471project1.vcxproj" on node 2 (Build target(s)).
      1>ClCompile:
-         D:\Microsoft Visual Studio 11.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc110.pdb" /Gd /TP /analyze- /errorReport:prompt SaleItem.cpp Source.cpp
+         D:\Microsoft Visual Studio 11.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc110.pdb" /Gd /TP /analyze- /errorReport:prompt Source.cpp
          Source.cpp
-         SaleItem.cpp
-         Generating Code...
+     1>c:\users\family\source\repos\471project1\471project1\source.cpp(177): warning C4102: 'sleep' : unreferenced label
+     1>c:\users\family\source\repos\471project1\471project1\source.cpp(177): warning C4102: 'this_thread' : unreferenced label
        Link:
          D:\Microsoft Visual Studio 11.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\Family\Source\Repos\471project1\471project1\Debug\471project1.exe" /INCREMENTAL /NOLOGO pthreadVC2.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\Family\Source\Repos\471project1\471project1\Debug\471project1.pdb" /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\Family\Source\Repos\471project1\471project1\Debug\471project1.lib" /MACHINE:X86 Debug\SaleItem.obj
          Debug\Source.obj
@@ -13,4 +13,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:02.26
+Time Elapsed 00:00:02.09
