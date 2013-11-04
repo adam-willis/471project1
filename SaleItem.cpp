@@ -2,7 +2,7 @@
 //default constructor should never be used, but it's there
 SalesRecord::SalesRecord()
 {
-	Day=10;
+	Day=0;
 	Month=0;
 	Year=0;
 	Register=0;
@@ -77,6 +77,7 @@ double SalesRecord::RandomAmount()
 //display
 void SalesRecord::display() const
 {
+	cout<<fixed<<setprecision(2);
 	cout<<"Date: "<<setw(2)<<setfill('0')<<getDay()<<"/"
 		<<setw(2)<<setfill('0')<<getMonth()<<"/"
 		<<setw(2)<<setfill('0')<<getYear()<<"  "
