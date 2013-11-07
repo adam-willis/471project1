@@ -14,7 +14,7 @@ void ProduceConsume();
 void Display();
 
 //Shared Values
-const int NUM_ITEMS=10000;								//The total items to produce
+const int NUM_ITEMS=10000;							//The total items to produce
 int NUM_PRODUCERS;									//Holds possible Producer values for each run
 int NUM_CONSUMERS;									//Holds possible Consumer values for each run
 int BSIZE;											//Defined by user input - buffer size
@@ -259,6 +259,8 @@ void Display()
 	fstream fout;
 	fout.open(FileName,ios::out);
 
+	//set output flags
+	fout<<fixed<<setprecision(2);
 	//Consumer output
 	for (int i=0; i<NUM_CONSUMERS; i++)
 	{

@@ -1,4 +1,4 @@
-﻿Build started 11/6/2013 10:23:04 PM.
+﻿Build started 11/6/2013 10:45:14 PM.
      1>Project "C:\Users\Family\Desktop\471project1\471project1.vcxproj" on node 2 (Build target(s)).
      1>ClCompile:
          D:\Microsoft Visual Studio 11.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc110.pdb" /Gd /TP /analyze- /errorReport:prompt Source.cpp
@@ -11,4 +11,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:02.31
+Time Elapsed 00:00:02.55
